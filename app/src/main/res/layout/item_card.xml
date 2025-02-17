@@ -1,0 +1,29 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="300dp"
+    android:layout_height="200dp"
+    android:orientation="vertical"
+    android:background="@drawable/card_background"
+    android:padding="16dp"
+    android:gravity="center">
+
+    <!-- Saldo de la tarjeta -->
+    <TextView
+        android:id="@+id/tvCardBalance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="$0.00"
+        android:textColor="#FFFFFF"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
+    <!-- Número de tarjeta -->
+    <TextView
+        android:id="@+id/tvCardNumberPreview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="**** **** **** 3456"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp"
+        android:layout_marginTop="16dp" />
+</LinearLayout>
