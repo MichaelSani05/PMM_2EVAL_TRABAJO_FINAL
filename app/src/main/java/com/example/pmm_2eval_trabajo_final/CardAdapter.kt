@@ -1,29 +1,28 @@
 package com.example.pmm_2eval_trabajo_final
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.compose.material3.Card
 import androidx.recyclerview.widget.RecyclerView
 
 class CardAdapter(
-    private val cards: List<Card>,
-    private val onCardSelected: (Card) -> Unit
+    cards: List<Card>,
+    val onCardSelected: (Card) -> Unit
 ) : RecyclerView.Adapter<CardAdapter.CardViewHolder>() {
 
+    private var cards: MutableList<Card> = cards.toMutableList()
+
     inner class CardViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val tvCardBalance: TextView = itemView.findViewById(R.id.tvCardBalance)
         private val tvCardNumberPreview: TextView = itemView.findViewById(R.id.tvCardNumberPreview)
+        private val tvCardExpiration: TextView = itemView.findViewById(R.id.tvCardExpirationDate)
+        private val tvCardSaldoPreview : TextView = itemView.findViewById(R.id.tvCardSaldoPreview)
 
         fun bind(card: Card) {
-            tvCardBalance.text = card.balanceFormatted
             tvCardNumberPreview.text = card.lastFourDigitsFormatted
-
-            // Detecta clics en la tarjeta
-            itemView.setOnClickListener {
-                onCardSelected(card)
-            }
+            tvCardSaldoPreview.text = card.balanceFormatted
+            tvCardExpiration.text = card.expirationDate ?: "Fecha no disponible"
         }
     }
 
@@ -33,8 +32,16 @@ class CardAdapter(
     }
 
     override fun onBindViewHolder(holder: CardViewHolder, position: Int) {
-        holder.bind(cards[position])
+        val card = cards[position]
+        holder.bind(card)
     }
 
     override fun getItemCount(): Int = cards.size
+
+    fun updateCards(newCards: List<Card>) {
+        Log.d("CardAdapter", "Actualizando tarjetas: ${newCards.size} tarjetas")
+        this.cards.clear()
+        this.cards.addAll(newCards)
+        notifyDataSetChanged()
+    }
 }

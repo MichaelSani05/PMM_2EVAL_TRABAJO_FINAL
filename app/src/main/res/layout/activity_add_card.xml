@@ -1,0 +1,46 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- Campo para el número de tarjeta -->
+    <EditText
+        android:id="@+id/etCardNumber"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Número de tarjeta"
+        android:inputType="number"
+        android:maxLength="16"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Campo para el CVV -->
+    <EditText
+        android:id="@+id/etCVV"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="CVV"
+        android:inputType="number"
+        android:maxLength="3"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Campo para la fecha de expiración -->
+    <EditText
+        android:id="@+id/etExpirationDate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Fecha de expiración (MM/YY)"
+        android:inputType="date"
+        android:maxLength="5"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Botón para guardar la tarjeta -->
+    <Button
+        android:id="@+id/btnSaveCard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Guardar Tarjeta"
+        android:backgroundTint="@color/black"
+        android:textColor="@android:color/white" />
+</LinearLayout>

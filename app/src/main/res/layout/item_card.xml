@@ -5,19 +5,20 @@
     android:orientation="vertical"
     android:background="@drawable/card_background"
     android:padding="16dp"
-    android:gravity="center">
+    android:gravity="center"
+    android:clipToPadding="false"
+    android:clipChildren="false">
 
-    <!-- Saldo de la tarjeta -->
     <TextView
-        android:id="@+id/tvCardBalance"
+        android:id="@+id/tvCardSaldoPreview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="$0.00"
+        android:text="0"
         android:textColor="#FFFFFF"
         android:textSize="24sp"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:layout_marginTop="16dp" />
 
-    <!-- Número de tarjeta -->
     <TextView
         android:id="@+id/tvCardNumberPreview"
         android:layout_width="wrap_content"
@@ -25,5 +26,56 @@
         android:text="**** **** **** 3456"
         android:textColor="#FFFFFF"
         android:textSize="18sp"
+        android:textStyle="bold"
         android:layout_marginTop="16dp" />
+
+    <!-- Detalles inferiores (fecha de expiración y logo) -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginTop="16dp">
+
+        <!-- Fecha de expiración -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="start">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Expira"
+                android:textColor="#FFFFFF"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvCardExpirationDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="MM/YY"
+                android:textColor="#FFFFFF"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:layout_marginTop="4dp" />
+        </LinearLayout>
+
+        <!-- Espacio flexible -->
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
+
+        <ImageView
+            android:id="@+id/ivCardLogo"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginEnd="8dp"
+            android:contentDescription="Card Logo"
+            android:src="@drawable/ic_visa_logo" />
+
+    </LinearLayout>
 </LinearLayout>
