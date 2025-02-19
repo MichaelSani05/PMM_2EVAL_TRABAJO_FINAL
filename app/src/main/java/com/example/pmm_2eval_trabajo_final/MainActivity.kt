@@ -5,6 +5,8 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Button
+import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -22,8 +24,14 @@ class MainActivity : AppCompatActivity() {
     private lateinit var rvTransactions: RecyclerView
     private lateinit var tvNoTransactionsMessage: TextView
     private lateinit var tvTransactionsTitle: TextView
-    private lateinit var btnAddBalance: Button
+    private lateinit var btnAddBalance: ImageView
+    private lateinit var btnTransfer: ImageView
+    private lateinit var txtTransfer : TextView
+    private lateinit var transferLayout : LinearLayout
+    private lateinit var añadirLayout: LinearLayout
+    private lateinit var txtAddBalance : TextView
     private var selectedCardId: String? = null
+    private lateinit var auth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,6 +45,10 @@ class MainActivity : AppCompatActivity() {
         tvNoTransactionsMessage = findViewById(R.id.tvNoTransactionsMessage)
         tvTransactionsTitle = findViewById(R.id.tvTransactionsTitle)
         btnAddBalance = findViewById(R.id.btnAddBalance)
+        txtTransfer = findViewById(R.id.txtTransfer)
+        txtAddBalance = findViewById(R.id.txtAddBalance)
+        transferLayout = findViewById(R.id.transferLayout)
+        añadirLayout = findViewById(R.id.añadirLayout)
 
         // Verifica si el usuario está autenticado
         val currentUser = FirebaseAuth.getInstance().currentUser
@@ -46,14 +58,28 @@ class MainActivity : AppCompatActivity() {
             return
         }
 
+        // Inicializa Firebase Authentication
+        auth = FirebaseAuth.getInstance()
+
+        // Botón de cerrar sesión
+        val btnLogout = findViewById<Button>(R.id.btnLogout)
+        btnLogout.setOnClickListener {
+            // Cierra la sesión del usuario
+            auth.signOut()
+
+            // Redirige al usuario a la pantalla de autenticación
+            startActivity(Intent(this, Auth::class.java))
+            finish()
+        }
+
         // Configura el botón "Añadir Tarjeta"
-        val btnAddCard = findViewById<Button>(R.id.btnAddCard)
+        val btnAddCard = findViewById<ImageView>(R.id.btnAddCard)
         btnAddCard.setOnClickListener {
             startActivity(Intent(this, AddCardActivity::class.java))
         }
 
         // Configura el botón "Transferir"
-        val btnTransfer = findViewById<Button>(R.id.btnTransfer)
+        btnTransfer = findViewById<ImageView>(R.id.btnTransfer)
         btnTransfer.setOnClickListener {
             if (selectedCardId.isNullOrEmpty()) {
                 Toast.makeText(this, "No hay tarjeta seleccionada", Toast.LENGTH_SHORT).show()
@@ -73,6 +99,19 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this, AddBalanceActivity::class.java)
             intent.putExtra("cardId", selectedCardId)
             startActivity(intent)
+        }
+
+        // Botón para ir a MainActivity
+        val btnHome = findViewById<Button>(R.id.btnHome)
+        btnHome.setOnClickListener {
+            // Si ya estás en MainActivity, no es necesario reiniciarla
+            Toast.makeText(this, "Ya estás en la página de inicio", Toast.LENGTH_SHORT).show()
+        }
+
+        // Botón para ir a la página de estadísticas
+        val btnStatistics = findViewById<Button>(R.id.btnStatistics)
+        btnStatistics.setOnClickListener {
+            startActivity(Intent(this, StatisticsActivity::class.java))
         }
 
         // Inicializa la base de datos
@@ -98,12 +137,22 @@ class MainActivity : AppCompatActivity() {
                     tvCardNumber.visibility = View.GONE
                     rvCards.visibility = View.GONE
                     btnAddBalance.visibility = View.GONE
+                    btnTransfer.visibility = View.GONE
+                    txtTransfer.visibility = View.GONE
+                    txtAddBalance.visibility = View.GONE
+                    transferLayout.visibility = View.GONE
+                    añadirLayout.visibility = View.GONE
                 } else {
                     // Hay tarjetas disponibles
                     tvNoCardsMessage.visibility = View.GONE
                     tvCardNumber.visibility = View.VISIBLE
                     rvCards.visibility = View.VISIBLE
                     btnAddBalance.visibility = View.VISIBLE
+                    btnTransfer.visibility = View.VISIBLE
+                    txtTransfer.visibility = View.VISIBLE
+                    txtAddBalance.visibility = View.VISIBLE
+                    transferLayout.visibility = View.VISIBLE
+                    añadirLayout.visibility = View.VISIBLE
 
                     // Configura el adaptador solo si no está configurado
                     if (rvCards.adapter == null) {

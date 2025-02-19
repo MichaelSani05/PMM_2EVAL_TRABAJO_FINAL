@@ -6,6 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 class TransactionAdapter(private val transactions: List<Transaction>) :
     RecyclerView.Adapter<TransactionAdapter.TransactionViewHolder>() {
@@ -17,7 +19,21 @@ class TransactionAdapter(private val transactions: List<Transaction>) :
 
         fun bind(transaction: Transaction) {
             tvDescription.text = transaction.description
-            tvDate.text = transaction.date ?: "Fecha desconocida"
+
+            // Formatea la fecha si está disponible
+            val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            val outputFormat = SimpleDateFormat("dd MMM", Locale.getDefault())
+            val formattedDate = transaction.date?.let { dateString ->
+                try {
+                    val date = inputFormat.parse(dateString)
+                    outputFormat.format(date)
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    "Fecha desconocida"
+                }
+            } ?: "Fecha desconocida"
+
+            tvDate.text = formattedDate
             tvAmount.text = "$${transaction.amount ?: 0.0}"
         }
     }

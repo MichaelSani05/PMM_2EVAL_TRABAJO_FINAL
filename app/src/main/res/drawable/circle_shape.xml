@@ -1,0 +1,14 @@
+<!-- res/drawable/circle_shape.xml -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval"> <!-- "oval" crea una forma ovalada (círculo si es cuadrado) -->
+
+    <!-- Color de fondo del círculo -->
+    <solid android:color="@color/background1" /> <!-- Puedes cambiar este color según tus necesidades -->
+
+    <!-- Borde del círculo (opcional) -->
+    <stroke
+        android:width="2dp"
+        android:color="@color/background1" /> <!-- Grosor y color del borde -->
+
+    <corners android:radius="50dp" />
+</shape>

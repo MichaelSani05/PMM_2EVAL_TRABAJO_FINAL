@@ -5,6 +5,7 @@ import android.util.Log
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.Spinner
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -38,6 +39,11 @@ class TransferActivity : AppCompatActivity() {
             Toast.makeText(this, "No se ha seleccionado ninguna tarjeta", Toast.LENGTH_SHORT).show()
             finish()
             return
+        }
+
+        val goBack = findViewById<ImageView>(R.id.goBack)
+        goBack.setOnClickListener{
+            finish()
         }
 
         spnRecipient = findViewById(R.id.spnRecipient)
@@ -99,6 +105,7 @@ class TransferActivity : AppCompatActivity() {
     private fun sendTransfer(recipientId: String, amount: Double) {
         val transactionId = database.child("transactions").push().key
         val currentDate = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault()).format(Date())
+
         if (transactionId == null) {
             Toast.makeText(this, "Error al generar la transacción", Toast.LENGTH_SHORT).show()
             return
@@ -123,7 +130,9 @@ class TransferActivity : AppCompatActivity() {
                         override fun onDataChange(nameSnapshot: DataSnapshot) {
                             val recipientName = nameSnapshot.getValue(String::class.java)
                             val formattedRecipientName = recipientName?.split(" ")?.firstOrNull() ?: "Usuario"
-                            val formattedDescription = "Transferencia a $formattedRecipientName"
+
+                            // Descripción para el remitente
+                            val senderDescription = "Transferencia a $formattedRecipientName"
 
                             // Añade la transacción al remitente
                             val senderTransaction = mapOf(
@@ -132,36 +141,48 @@ class TransferActivity : AppCompatActivity() {
                                 "status" to "completed",
                                 "to" to recipientId,
                                 "type" to "transfer",
-                                "description" to formattedDescription // Incluye la descripción aquí
+                                "description" to senderDescription // Mantenemos esta descripción igual
                             )
                             database.child("users").child(currentUserUid).child("transactions").child(transactionId).setValue(senderTransaction)
 
-                            // Actualiza el saldo del destinatario
-                            database.child("users").child(recipientId).child("balance")
-                                .addListenerForSingleValueEvent(object : ValueEventListener {
-                                    override fun onDataChange(recipientSnapshot: DataSnapshot) {
-                                        val recipientBalance = recipientSnapshot.getValue(Double::class.java) ?: 0.0
-                                        database.child("users").child(recipientId).child("balance").setValue(recipientBalance + amount)
+                            // Carga el nombre del remitente para usarlo en la descripción del destinatario
+                            database.child("users").child(currentUserUid).child("name").addListenerForSingleValueEvent(object : ValueEventListener {
+                                override fun onDataChange(senderNameSnapshot: DataSnapshot) {
+                                    val senderName = senderNameSnapshot.getValue(String::class.java)
+                                    val formattedSenderName = senderName?.split(" ")?.firstOrNull() ?: "Usuario"
 
-                                        // Añade la transacción al destinatario
-                                        val recipientTransaction = mapOf(
-                                            "amount" to amount,
-                                            "date" to currentDate,
-                                            "status" to "completed",
-                                            "from" to currentUserUid,
-                                            "type" to "transfer",
-                                            "description" to formattedDescription // La descripción ya estaba aquí
-                                        )
-                                        database.child("users").child(recipientId).child("transactions").child(transactionId).setValue(recipientTransaction)
+                                    // Actualiza el saldo del destinatario
+                                    database.child("users").child(recipientId).child("balance")
+                                        .addListenerForSingleValueEvent(object : ValueEventListener {
+                                            override fun onDataChange(recipientSnapshot: DataSnapshot) {
+                                                val recipientBalance = recipientSnapshot.getValue(Double::class.java) ?: 0.0
+                                                database.child("users").child(recipientId).child("balance").setValue(recipientBalance + amount)
 
-                                        Toast.makeText(this@TransferActivity, "Transferencia realizada con éxito", Toast.LENGTH_SHORT).show()
-                                        finish()
-                                    }
+                                                // Añade la transacción al destinatario
+                                                val recipientTransaction = mapOf(
+                                                    "amount" to amount,
+                                                    "date" to currentDate,
+                                                    "status" to "completed",
+                                                    "from" to currentUserUid,
+                                                    "type" to "transfer",
+                                                    "description" to formattedSenderName // Solo el nombre del remitente
+                                                )
+                                                database.child("users").child(recipientId).child("transactions").child(transactionId).setValue(recipientTransaction)
 
-                                    override fun onCancelled(error: DatabaseError) {
-                                        Toast.makeText(this@TransferActivity, "Error al actualizar el saldo del destinatario", Toast.LENGTH_SHORT).show()
-                                    }
-                                })
+                                                Toast.makeText(this@TransferActivity, "Transferencia realizada con éxito", Toast.LENGTH_SHORT).show()
+                                                finish()
+                                            }
+
+                                            override fun onCancelled(error: DatabaseError) {
+                                                Toast.makeText(this@TransferActivity, "Error al actualizar el saldo del destinatario", Toast.LENGTH_SHORT).show()
+                                            }
+                                        })
+                                }
+
+                                override fun onCancelled(error: DatabaseError) {
+                                    Toast.makeText(this@TransferActivity, "Error al obtener el nombre del remitente", Toast.LENGTH_SHORT).show()
+                                }
+                            })
                         }
 
                         override fun onCancelled(error: DatabaseError) {

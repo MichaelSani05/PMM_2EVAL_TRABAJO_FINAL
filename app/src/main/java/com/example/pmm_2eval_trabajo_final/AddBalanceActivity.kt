@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
@@ -24,6 +25,11 @@ class AddBalanceActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_balance)
+
+        val goBack = findViewById<ImageView>(R.id.goBack)
+        goBack.setOnClickListener{
+            finish()
+        }
 
         // Inicializa las vistas
         etAmountToAdd = findViewById(R.id.etAmountToAdd)
@@ -58,6 +64,7 @@ class AddBalanceActivity : AppCompatActivity() {
 
             // Añade el saldo a la tarjeta
             addBalanceToCard(cardId, amount)
+
         }
     }
 

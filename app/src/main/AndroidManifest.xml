@@ -31,7 +31,7 @@
         <activity android:name=".AddCardActivity" />
         <activity android:name=".TransferActivity"/>
         <activity android:name=".AddBalanceActivity"/>
-
+        <activity android:name=".StatisticsActivity"/>
     </application>
 
 </manifest>
