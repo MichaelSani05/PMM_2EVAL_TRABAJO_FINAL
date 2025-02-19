@@ -98,8 +98,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:visibility="gone"
-            android:padding="16dp">
+            android:padding="16dp"
+            android:visibility="gone">
 
             <!-- Botón de retroceso -->
             <Button
@@ -115,30 +115,31 @@
                 android:id="@+id/etNameRegister"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
                 android:hint="Nombre"
-                android:inputType="textPersonName"
-                android:layout_marginBottom="8dp" />
+                android:inputType="textPersonName" />
 
             <EditText
                 android:id="@+id/etEmailRegister"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
                 android:hint="Correo electrónico"
-                android:inputType="textEmailAddress"
-                android:layout_marginBottom="8dp" />
+                android:inputType="textEmailAddress" />
 
             <EditText
                 android:id="@+id/etPasswordRegister"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
                 android:hint="Contraseña"
-                android:inputType="textPassword"
-                android:layout_marginBottom="16dp" />
+                android:inputType="textPassword" />
 
             <Button
                 android:id="@+id/btnProceedRegister"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:backgroundTint="@color/background1"
                 android:text="Registrarse" />
         </LinearLayout>
     </LinearLayout>

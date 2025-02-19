@@ -6,6 +6,22 @@
     android:orientation="vertical">
 
     <!-- Contenedor principal para el contenido -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/background1"
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/btnLogout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:text="Cerrar sesión"
+            android:textColor="@color/white"
+            android:textSize="14sp" />
+    </LinearLayout>
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -23,20 +39,13 @@
             android:textAlignment="center">
 
             <!-- Botón de cerrar sesión -->
-            <Button
-                android:id="@+id/btnLogout"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:text="Cerrar sesión"
-                android:textColor="#FF0000"
-                android:textSize="14sp" />
 
             <!-- Carrusel de tarjetas -->
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvCards"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
+                android:layout_marginTop="35dp"
                 android:clipToPadding="false"
                 android:orientation="horizontal"
                 android:paddingHorizontal="20dp" />

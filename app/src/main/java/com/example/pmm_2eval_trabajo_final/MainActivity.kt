@@ -136,10 +136,6 @@ class MainActivity : AppCompatActivity() {
                     tvNoCardsMessage.visibility = View.VISIBLE
                     tvCardNumber.visibility = View.GONE
                     rvCards.visibility = View.GONE
-                    btnAddBalance.visibility = View.GONE
-                    btnTransfer.visibility = View.GONE
-                    txtTransfer.visibility = View.GONE
-                    txtAddBalance.visibility = View.GONE
                     transferLayout.visibility = View.GONE
                     añadirLayout.visibility = View.GONE
                 } else {
@@ -147,10 +143,6 @@ class MainActivity : AppCompatActivity() {
                     tvNoCardsMessage.visibility = View.GONE
                     tvCardNumber.visibility = View.VISIBLE
                     rvCards.visibility = View.VISIBLE
-                    btnAddBalance.visibility = View.VISIBLE
-                    btnTransfer.visibility = View.VISIBLE
-                    txtTransfer.visibility = View.VISIBLE
-                    txtAddBalance.visibility = View.VISIBLE
                     transferLayout.visibility = View.VISIBLE
                     añadirLayout.visibility = View.VISIBLE
 
@@ -334,17 +326,14 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 if (transactions.isEmpty()) {
-                    // No hay transacciones disponibles
                     tvTransactionsTitle.visibility = View.GONE
                     rvTransactions.visibility = View.GONE
                     tvNoTransactionsMessage.visibility = View.VISIBLE
                 } else {
-                    // Hay transacciones disponibles
                     tvTransactionsTitle.visibility = View.VISIBLE
                     rvTransactions.visibility = View.VISIBLE
                     tvNoTransactionsMessage.visibility = View.GONE
 
-                    // Configura el adaptador
                     setupTransactionsRecyclerView(transactions)
                 }
             }
@@ -356,7 +345,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupTransactionsRecyclerView(transactions: List<Transaction>) {
-        val adapter = TransactionAdapter(transactions)
+        val adapter = TransactionAdapter(transactions) { selectedTransaction ->
+            // Abrir la actividad de detalles y pasar los datos de la transacción
+            val intent = Intent(this, TransactionDetailsActivity::class.java)
+            intent.putExtra("transaction", selectedTransaction)
+            startActivity(intent)
+        }
         rvTransactions.adapter = adapter
         rvTransactions.layoutManager = LinearLayoutManager(this)
     }
