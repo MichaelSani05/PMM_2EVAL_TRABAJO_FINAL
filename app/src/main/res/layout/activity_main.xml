@@ -17,6 +17,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="?attr/selectableItemBackgroundBorderless"
+            android:paddingTop="15dp"
+            android:paddingBottom="15dp"
             android:text="Cerrar sesión"
             android:textColor="@color/white"
             android:textSize="14sp" />
