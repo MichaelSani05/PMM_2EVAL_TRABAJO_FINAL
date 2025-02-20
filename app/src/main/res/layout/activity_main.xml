@@ -237,5 +237,14 @@
             android:background="?attr/selectableItemBackground"
             android:text="Estadísticas"
             android:textAllCaps="false" />
+
+        <Button
+            android:id="@+id/btnPagos"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="?attr/selectableItemBackground"
+            android:text="Pagos"
+            android:textAllCaps="false" />
     </LinearLayout>
 </LinearLayout>

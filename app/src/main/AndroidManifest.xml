@@ -33,6 +33,7 @@
         <activity android:name=".AddBalanceActivity"/>
         <activity android:name=".StatisticsActivity"/>
         <activity android:name=".TransactionDetailsActivity"/>
+        <activity android:name=".ScheduledPaymentsActivity" />
     </application>
 
 </manifest>

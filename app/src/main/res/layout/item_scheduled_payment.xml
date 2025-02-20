@@ -1,0 +1,59 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="16dp"
+    android:background="?attr/selectableItemBackground"
+    android:gravity="center_vertical"
+    android:clickable="true"
+    android:focusable="true">
+
+    <!-- Icono de destinatario -->
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/ivRecipientIcon"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        app:lottie_rawRes="@raw/ic_credit"
+        app:lottie_loop="false"
+        app:lottie_autoPlay="false" />
+
+    <!-- Contenido principal -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:padding="4dp">
+
+        <!-- Nombre del destinatario -->
+        <TextView
+            android:id="@+id/tvRecipient"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Destinatario"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:textColor="@color/black" />
+
+        <!-- Cantidad -->
+        <TextView
+            android:id="@+id/tvAmount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cantidad"
+            android:textSize="14sp"
+            android:textColor="@color/black" />
+
+        <!-- Fecha -->
+        <TextView
+            android:id="@+id/tvDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Fecha"
+            android:textSize="12sp"
+            android:textColor="@color/dark_gray" />
+    </LinearLayout>
+
+</LinearLayout>

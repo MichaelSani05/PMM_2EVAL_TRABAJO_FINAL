@@ -57,8 +57,15 @@ class StatisticsActivity : AppCompatActivity() {
         val btnStatistics = findViewById<Button>(R.id.btnStatistics)
         btnStatistics.setOnClickListener {
             // Si ya estás en MainActivity, no es necesario reiniciarla
-            Toast.makeText(this, "Ya estás en la página de inicio", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Ya estás en la página de stats", Toast.LENGTH_SHORT).show()
         }
+
+        // Botón para ir a la página de estadísticas
+        val btnPagos = findViewById<Button>(R.id.btnPagos)
+        btnPagos.setOnClickListener {
+            startActivity(Intent(this, ScheduledPaymentsActivity::class.java))
+        }
+
 
         // Inicializar el gráfico
         pieChart = findViewById(R.id.pieChart)

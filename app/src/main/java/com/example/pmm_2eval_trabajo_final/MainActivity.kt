@@ -114,6 +114,12 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent(this, StatisticsActivity::class.java))
         }
 
+        // Botón para ir a la página de estadísticas
+        val btnPagos = findViewById<Button>(R.id.btnPagos)
+        btnPagos.setOnClickListener {
+            startActivity(Intent(this, ScheduledPaymentsActivity::class.java))
+        }
+
         // Inicializa la base de datos
         database = FirebaseDatabase.getInstance("https://pmm-investor-default-rtdb.europe-west1.firebasedatabase.app").reference
         val userCardsRef = database.child("users").child(currentUser.uid).child("cards")

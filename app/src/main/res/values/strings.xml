@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">PMM_2EVAL_TRABAJO_FINAL</string>
+    <string name="icon_description_recipient">Icono de destinatario</string>
+    <string name="icon_description_delete">Eliminar pago programado</string>
 </resources>
