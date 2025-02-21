@@ -33,7 +33,6 @@ class TransferActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_transfer)
 
-        // Recibe el ID de la tarjeta seleccionada
         selectedCardId = intent.getStringExtra("selectedCardId") ?: ""
         if (selectedCardId.isEmpty()) {
             Toast.makeText(this, "No se ha seleccionado ninguna tarjeta", Toast.LENGTH_SHORT).show()
@@ -50,14 +49,11 @@ class TransferActivity : AppCompatActivity() {
         etAmount = findViewById(R.id.etAmount)
         btnSendTransfer = findViewById(R.id.btnSendTransfer)
 
-        // Inicializa Firebase
         database = FirebaseDatabase.getInstance("https://pmm-investor-default-rtdb.europe-west1.firebasedatabase.app").reference
         currentUserUid = FirebaseAuth.getInstance().currentUser?.uid ?: ""
 
-        // Carga la lista de usuarios disponibles como destinatarios
         loadUsers()
 
-        // Configura el botón para enviar la transferencia
         btnSendTransfer.setOnClickListener {
             val recipientPosition = spnRecipient.selectedItemPosition
             val amountText = etAmount.text.toString().trim()
@@ -111,7 +107,6 @@ class TransferActivity : AppCompatActivity() {
             return
         }
 
-        // Obtiene el saldo de la tarjeta seleccionada
         database.child("users").child(currentUserUid).child("cards").child(selectedCardId).child("currentBalance")
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(cardSnapshot: DataSnapshot) {
@@ -121,51 +116,44 @@ class TransferActivity : AppCompatActivity() {
                         return
                     }
 
-                    // Deduce el monto del saldo de la tarjeta seleccionada
                     database.child("users").child(currentUserUid).child("cards").child(selectedCardId).child("currentBalance")
                         .setValue(cardBalance - amount)
 
-                    // Carga el nombre del destinatario
                     database.child("users").child(recipientId).child("name").addListenerForSingleValueEvent(object : ValueEventListener {
                         override fun onDataChange(nameSnapshot: DataSnapshot) {
                             val recipientName = nameSnapshot.getValue(String::class.java)
                             val formattedRecipientName = recipientName?.split(" ")?.firstOrNull() ?: "Usuario"
 
-                            // Descripción para el remitente
                             val senderDescription = "Transferencia a $formattedRecipientName"
 
-                            // Añade la transacción al remitente
                             val senderTransaction = mapOf(
                                 "amount" to -amount,
                                 "date" to currentDate,
                                 "status" to "completed",
                                 "to" to recipientId,
                                 "type" to "transfer",
-                                "description" to senderDescription // Mantenemos esta descripción igual
+                                "description" to senderDescription
                             )
                             database.child("users").child(currentUserUid).child("transactions").child(transactionId).setValue(senderTransaction)
 
-                            // Carga el nombre del remitente para usarlo en la descripción del destinatario
                             database.child("users").child(currentUserUid).child("name").addListenerForSingleValueEvent(object : ValueEventListener {
                                 override fun onDataChange(senderNameSnapshot: DataSnapshot) {
                                     val senderName = senderNameSnapshot.getValue(String::class.java)
                                     val formattedSenderName = senderName?.split(" ")?.firstOrNull() ?: "Usuario"
 
-                                    // Actualiza el saldo del destinatario
                                     database.child("users").child(recipientId).child("balance")
                                         .addListenerForSingleValueEvent(object : ValueEventListener {
                                             override fun onDataChange(recipientSnapshot: DataSnapshot) {
                                                 val recipientBalance = recipientSnapshot.getValue(Double::class.java) ?: 0.0
                                                 database.child("users").child(recipientId).child("balance").setValue(recipientBalance + amount)
 
-                                                // Añade la transacción al destinatario
                                                 val recipientTransaction = mapOf(
                                                     "amount" to amount,
                                                     "date" to currentDate,
                                                     "status" to "completed",
                                                     "from" to currentUserUid,
                                                     "type" to "transfer",
-                                                    "description" to formattedSenderName // Solo el nombre del remitente
+                                                    "description" to formattedSenderName
                                                 )
                                                 database.child("users").child(recipientId).child("transactions").child(transactionId).setValue(recipientTransaction)
 

@@ -17,9 +17,7 @@ class TransactionDetailsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_transaction_details)
 
-        // Obtener los datos de la transacción desde el Intent
         val transaction = intent.getParcelableExtra<Transaction>("transaction")
-        // Configurar el botón para generar la factura
         val btnGenerateInvoice: Button = findViewById(R.id.btnGenerateInvoice)
 
         if (transaction != null) {
@@ -34,7 +32,6 @@ class TransactionDetailsActivity : AppCompatActivity() {
                 generatePDF(transaction)
             }
         } else {
-            // Mostrar un mensaje de error si no se encontraron datos
             findViewById<TextView>(R.id.tvTransactionType).text = "Error: No se encontraron detalles de la transacción"
         }
 
@@ -46,14 +43,11 @@ class TransactionDetailsActivity : AppCompatActivity() {
     }
 
     private fun generatePDF(transaction: Transaction) {
-        // Crear un nuevo documento PDF
         val document = PdfDocument()
 
-        // Crear una página
         val pageInfo = PdfDocument.PageInfo.Builder(300, 600, 1).create()
         val page = document.startPage(pageInfo)
 
-        // Dibujar contenido en la página
         val canvas = page.canvas
         val title = "Factura de Transacción"
         val type = "Tipo: ${transaction.type}"
@@ -77,7 +71,6 @@ class TransactionDetailsActivity : AppCompatActivity() {
 
         document.finishPage(page)
 
-        // Guardar el PDF en el almacenamiento externo
         val fileName = "factura_${System.currentTimeMillis()}.pdf"
         val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
         val file = File(downloadsDir, fileName)

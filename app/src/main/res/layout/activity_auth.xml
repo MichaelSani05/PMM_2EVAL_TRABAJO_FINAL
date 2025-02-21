@@ -23,11 +23,11 @@
         <!-- Logo -->
         <ImageView
             android:id="@+id/logo"
-            android:layout_width="150dp"
-            android:layout_height="150dp"
-            android:src="@drawable/ic_launcher_foreground"
-        android:contentDescription="Logo"
-        android:visibility="visible" />
+            android:layout_width="250dp"
+            android:layout_height="250dp"
+            android:contentDescription="Logo"
+            android:src="@drawable/investor"
+            android:visibility="visible" />
 
         <!-- Botones de elección -->
         <Button

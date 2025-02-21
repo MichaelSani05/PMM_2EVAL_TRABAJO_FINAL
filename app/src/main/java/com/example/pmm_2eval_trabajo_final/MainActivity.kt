@@ -37,7 +37,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // Inicializa las vistas
         rvCards = findViewById(R.id.rvCards)
         tvCardNumber = findViewById(R.id.tvCardNumber)
         tvNoCardsMessage = findViewById(R.id.tvNoCardsMessage)
@@ -50,7 +49,6 @@ class MainActivity : AppCompatActivity() {
         transferLayout = findViewById(R.id.transferLayout)
         añadirLayout = findViewById(R.id.añadirLayout)
 
-        // Verifica si el usuario está autenticado
         val currentUser = FirebaseAuth.getInstance().currentUser
         if (currentUser == null) {
             startActivity(Intent(this, Auth::class.java))
@@ -58,27 +56,21 @@ class MainActivity : AppCompatActivity() {
             return
         }
 
-        // Inicializa Firebase Authentication
         auth = FirebaseAuth.getInstance()
 
-        // Botón de cerrar sesión
         val btnLogout = findViewById<Button>(R.id.btnLogout)
         btnLogout.setOnClickListener {
-            // Cierra la sesión del usuario
             auth.signOut()
 
-            // Redirige al usuario a la pantalla de autenticación
             startActivity(Intent(this, Auth::class.java))
             finish()
         }
 
-        // Configura el botón "Añadir Tarjeta"
         val btnAddCard = findViewById<ImageView>(R.id.btnAddCard)
         btnAddCard.setOnClickListener {
             startActivity(Intent(this, AddCardActivity::class.java))
         }
 
-        // Configura el botón "Transferir"
         btnTransfer = findViewById<ImageView>(R.id.btnTransfer)
         btnTransfer.setOnClickListener {
             if (selectedCardId.isNullOrEmpty()) {
@@ -90,7 +82,6 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        // Configura el botón "Añadir Saldo"
         btnAddBalance.setOnClickListener {
             if (selectedCardId.isNullOrEmpty()) {
                 Toast.makeText(this, "No hay tarjeta seleccionada", Toast.LENGTH_SHORT).show()
@@ -101,30 +92,24 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        // Botón para ir a MainActivity
         val btnHome = findViewById<Button>(R.id.btnHome)
         btnHome.setOnClickListener {
-            // Si ya estás en MainActivity, no es necesario reiniciarla
             Toast.makeText(this, "Ya estás en la página de inicio", Toast.LENGTH_SHORT).show()
         }
 
-        // Botón para ir a la página de estadísticas
         val btnStatistics = findViewById<Button>(R.id.btnStatistics)
         btnStatistics.setOnClickListener {
             startActivity(Intent(this, StatisticsActivity::class.java))
         }
 
-        // Botón para ir a la página de estadísticas
         val btnPagos = findViewById<Button>(R.id.btnPagos)
         btnPagos.setOnClickListener {
             startActivity(Intent(this, ScheduledPaymentsActivity::class.java))
         }
 
-        // Inicializa la base de datos
         database = FirebaseDatabase.getInstance("https://pmm-investor-default-rtdb.europe-west1.firebasedatabase.app").reference
         val userCardsRef = database.child("users").child(currentUser.uid).child("cards")
 
-        // Observa los datos de las tarjetas
         userCardsRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val cards = mutableListOf<Card>()
@@ -138,29 +123,24 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 if (cards.isEmpty()) {
-                    // No hay tarjetas disponibles
                     tvNoCardsMessage.visibility = View.VISIBLE
                     tvCardNumber.visibility = View.GONE
                     rvCards.visibility = View.GONE
                     transferLayout.visibility = View.GONE
                     añadirLayout.visibility = View.GONE
                 } else {
-                    // Hay tarjetas disponibles
                     tvNoCardsMessage.visibility = View.GONE
                     tvCardNumber.visibility = View.VISIBLE
                     rvCards.visibility = View.VISIBLE
                     transferLayout.visibility = View.VISIBLE
                     añadirLayout.visibility = View.VISIBLE
 
-                    // Configura el adaptador solo si no está configurado
                     if (rvCards.adapter == null) {
                         setupRecyclerView(cards)
                     } else {
-                        // Si el adaptador ya existe, actualiza los datos
                         (rvCards.adapter as? CardAdapter)?.updateCards(cards)
                     }
 
-                    // Actualiza los TextView con la tarjeta más cercana al centro
                     rvCards.post {
                         val layoutManager = rvCards.layoutManager as LinearLayoutManager
                         val closestPosition = findClosestPosition(layoutManager, cards)
@@ -178,14 +158,12 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
-        // Carga las transacciones del usuario
         loadTransactions()
     }
 
     override fun onResume() {
         super.onResume()
         Log.d("MainActivity", "onResume llamado")
-        // Recarga las tarjetas cuando la actividad vuelve al primer plano
         loadCardsFromFirebase()
     }
 
@@ -198,7 +176,6 @@ class MainActivity : AppCompatActivity() {
 
         val userCardsRef = database.child("users").child(currentUser.uid).child("cards")
 
-        // Usa addValueEventListener para escuchar cambios en tiempo real
         userCardsRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 Log.d("MainActivity", "Datos cargados desde Firebase: ${snapshot.value}")
@@ -213,22 +190,18 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 if (cards.isEmpty()) {
-                    // No hay tarjetas disponibles
                     tvNoCardsMessage.visibility = View.VISIBLE
                     tvCardNumber.visibility = View.GONE
                     rvCards.visibility = View.GONE
                     btnAddBalance.visibility = View.GONE
                 } else {
-                    // Hay tarjetas disponibles
                     tvNoCardsMessage.visibility = View.GONE
                     tvCardNumber.visibility = View.VISIBLE
                     rvCards.visibility = View.VISIBLE
                     btnAddBalance.visibility = View.VISIBLE
 
-                    // Actualiza el adaptador con los nuevos datos
                     (rvCards.adapter as? CardAdapter)?.updateCards(cards)
 
-                    // Actualiza los TextView con la tarjeta más cercana al centro
                     rvCards.post {
                         val layoutManager = rvCards.layoutManager as LinearLayoutManager
                         val closestPosition = findClosestPosition(layoutManager, cards)
@@ -256,17 +229,14 @@ class MainActivity : AppCompatActivity() {
         rvCards.adapter = adapter
         rvCards.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
 
-        // Usa PagerSnapHelper para centrar los elementos
         val snapHelper = PagerSnapHelper()
         if (rvCards.onFlingListener == null) {
             snapHelper.attachToRecyclerView(rvCards)
         }
 
-        // Agrega el decorador para centrar los elementos
         val spacing = resources.getDimensionPixelSize(R.dimen.card_spacing)
         rvCards.addItemDecoration(CenterItemDecoration(spacing))
 
-        // Actualiza la información al desplazarse
         rvCards.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
@@ -275,10 +245,9 @@ class MainActivity : AppCompatActivity() {
                     val closestPosition = findClosestPosition(layoutManager, cards)
                     if (closestPosition != RecyclerView.NO_POSITION) {
                         val selectedCard = cards[closestPosition]
-                        updateTextViews(selectedCard) // Actualiza los TextView
+                        updateTextViews(selectedCard)
                         selectedCardId = selectedCard.cardNumber
 
-                        // Llama al callback con la tarjeta en el centro
                         (rvCards.adapter as? CardAdapter)?.onCardSelected?.invoke(selectedCard)
                     }
                 }
@@ -294,7 +263,6 @@ class MainActivity : AppCompatActivity() {
         var minDistance = Int.MAX_VALUE
 
         for (position in firstVisiblePosition..lastVisiblePosition) {
-            // Asegúrate de que la posición esté dentro de los límites de la lista
             if (position < 0 || position >= cards.size) continue
 
             val view = layoutManager.findViewByPosition(position) ?: continue
@@ -352,7 +320,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupTransactionsRecyclerView(transactions: List<Transaction>) {
         val adapter = TransactionAdapter(transactions) { selectedTransaction ->
-            // Abrir la actividad de detalles y pasar los datos de la transacción
             val intent = Intent(this, TransactionDetailsActivity::class.java)
             intent.putExtra("transaction", selectedTransaction)
             startActivity(intent)

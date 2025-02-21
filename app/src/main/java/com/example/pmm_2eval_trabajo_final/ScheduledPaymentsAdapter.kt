@@ -1,6 +1,5 @@
 package com.example.pmm_2eval_trabajo_final
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -40,7 +39,6 @@ class ScheduledPaymentAdapter(
 
     override fun getItemCount(): Int = payments.size
 
-    // Método para eliminar un pago de la lista
     fun removePayment(position: Int) {
         if (position in 0 until payments.size) {
             payments.removeAt(position)
@@ -50,10 +48,4 @@ class ScheduledPaymentAdapter(
         }
     }
 
-    // Método para actualizar la lista completa (opcional)
-    fun updatePayments(newPayments: List<ScheduledPayment>) {
-        payments.clear()
-        payments.addAll(newPayments)
-        notifyDataSetChanged()
-    }
 }

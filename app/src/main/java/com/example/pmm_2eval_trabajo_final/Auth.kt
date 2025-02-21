@@ -17,44 +17,35 @@ class Auth : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_auth)
 
-        // Inicializa Firebase Authentication
         auth = FirebaseAuth.getInstance()
 
-        // Vincula las vistas
-        val logo = findViewById<View>(R.id.logo)
         val btnChooseLogin = findViewById<View>(R.id.btnChooseLogin)
         val btnChooseRegister = findViewById<View>(R.id.btnChooseRegister)
         val loginForm = findViewById<View>(R.id.loginForm)
         val registerForm = findViewById<View>(R.id.registerForm)
 
-        // Configura el botón de "Iniciar sesión"
         btnChooseLogin.setOnClickListener {
             showLoginForm()
         }
 
-        // Configura el botón de "Registrarse"
         btnChooseRegister.setOnClickListener {
             showRegisterForm()
         }
 
-        // Configura el botón de retroceso en el formulario de inicio de sesión
         loginForm.findViewById<View>(R.id.btnBackLogin).setOnClickListener {
             showInitialState()
         }
 
-        // Configura el botón de retroceso en el formulario de registro
         registerForm.findViewById<View>(R.id.btnBackRegister).setOnClickListener {
             showInitialState()
         }
 
-        // Configura el botón de "Proceder" en el formulario de inicio de sesión
         loginForm.findViewById<View>(R.id.btnProceedLogin).setOnClickListener {
             val email = loginForm.findViewById<TextView>(R.id.etEmailLogin).text.toString().trim()
             val password = loginForm.findViewById<TextView>(R.id.etPasswordLogin).text.toString().trim()
             loginUser(email, password)
         }
 
-        // Configura el botón de "Proceder" en el formulario de registro
         registerForm.findViewById<View>(R.id.btnProceedRegister).setOnClickListener {
             val name = registerForm.findViewById<TextView>(R.id.etNameRegister).text.toString().trim()
             val email = registerForm.findViewById<TextView>(R.id.etEmailRegister).text.toString().trim()

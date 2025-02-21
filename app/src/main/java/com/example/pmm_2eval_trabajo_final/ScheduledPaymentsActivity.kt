@@ -2,7 +2,10 @@ package com.example.pmm_2eval_trabajo_final
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.content.ContentValues
+import android.content.Intent
 import android.os.Bundle
+import android.provider.CalendarContract
 import android.util.Log
 import android.view.View
 import android.widget.*
@@ -12,7 +15,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
+import java.text.ParseException
+import java.text.SimpleDateFormat
 import java.util.*
+import android.Manifest
+import android.content.pm.PackageManager
+import android.provider.CalendarContract.Calendars
 
 class ScheduledPaymentsActivity : AppCompatActivity() {
 
@@ -23,8 +31,8 @@ class ScheduledPaymentsActivity : AppCompatActivity() {
     private lateinit var etTime: EditText
     private lateinit var btnSchedulePayment: Button
 
-    private val users = mutableListOf<Map<String, String>>() // Lista de usuarios (nombre y ID)
-    private val cards = mutableListOf<Card>() // Lista de tarjetas del usuario actual
+    private val users = mutableListOf<Map<String, String>>()
+    private val cards = mutableListOf<Card>()
 
     private lateinit var rvScheduledPayments: RecyclerView
     private val scheduledPayments = mutableListOf<ScheduledPayment>()
@@ -33,7 +41,6 @@ class ScheduledPaymentsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_scheduled_payments)
 
-        // Inicializa las vistas
         spRecipient = findViewById(R.id.spRecipient)
         spCard = findViewById(R.id.spCard)
         etAmount = findViewById(R.id.etAmount)
@@ -42,27 +49,42 @@ class ScheduledPaymentsActivity : AppCompatActivity() {
         btnSchedulePayment = findViewById(R.id.btnSchedulePayment)
         rvScheduledPayments = findViewById(R.id.rvScheduledPayments)
 
-        // Carga los usuarios, tarjetas y pagos programados
         loadUsers()
         loadCardsForSpinner()
         loadScheduledPayments()
 
-        // Configura el botón para programar el pago
         btnSchedulePayment.setOnClickListener {
             schedulePayment()
         }
 
-        // Configura el clic en los campos de fecha y hora
         etDate.setOnClickListener { showDatePickerDialog() }
         etTime.setOnClickListener { showTimePickerDialog() }
 
-        // Configura el RecyclerView con el adaptador
         val adapter = ScheduledPaymentAdapter(scheduledPayments)
         rvScheduledPayments.adapter = adapter
         rvScheduledPayments.layoutManager = LinearLayoutManager(this)
 
-        // Habilita el swipe para eliminar
+        val btnHome = findViewById<Button>(R.id.btnHome)
+        btnHome.setOnClickListener {
+            startActivity(Intent(this, MainActivity::class.java))
+        }
+
+        val btnStatistics = findViewById<Button>(R.id.btnStatistics)
+        btnStatistics.setOnClickListener {
+            startActivity(Intent(this, StatisticsActivity::class.java))
+        }
+
+        val btnPagos = findViewById<Button>(R.id.btnPagos)
+        btnPagos.setOnClickListener {
+            Toast.makeText(this, "Ya estás en la página de Pagos", Toast.LENGTH_SHORT).show()
+        }
+
         setupSwipeToDelete(adapter)
+
+        val btnSyncCalendar: Button = findViewById(R.id.btnSyncCalendar)
+        btnSyncCalendar.setOnClickListener {
+            Toast.makeText(this, "Pagos sincronizados con el calendario", Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun loadUsers() {
@@ -81,7 +103,6 @@ class ScheduledPaymentsActivity : AppCompatActivity() {
                     }
                 }
 
-                // Configura el Spinner de usuarios
                 val adapter = ArrayAdapter(this@ScheduledPaymentsActivity, android.R.layout.simple_spinner_item, users.map { it["name"] })
                 adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                 spRecipient.adapter = adapter
@@ -104,22 +125,20 @@ class ScheduledPaymentsActivity : AppCompatActivity() {
         val userCardsRef = database.child("users").child(currentUser.uid).child("cards")
         userCardsRef.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                cards.clear() // Limpia la lista de tarjetas
-                val cardNumbers = mutableListOf<String>() // Lista para los números formateados
+                cards.clear()
+                val cardNumbers = mutableListOf<String>()
 
                 for (cardSnapshot in snapshot.children) {
-                    val cardNumber = cardSnapshot.key // Obtiene la clave como cardNumber
+                    val cardNumber = cardSnapshot.key
                     val card = cardSnapshot.getValue(Card::class.java)
                     if (card != null && cardNumber != null) {
-                        card.cardNumber = cardNumber // Asigna el número de tarjeta al modelo
-                        cards.add(card) // Agrega la tarjeta a la lista
-                        // Formatea el número de tarjeta
+                        card.cardNumber = cardNumber
+                        cards.add(card)
                         val formattedCardNumber = "**** **** **** ${cardNumber.takeLast(4)}"
                         cardNumbers.add(formattedCardNumber)
                     }
                 }
 
-                // Configura el Spinner con los números de tarjeta formateados
                 setupCardSpinner(cardNumbers)
             }
 
@@ -131,10 +150,8 @@ class ScheduledPaymentsActivity : AppCompatActivity() {
     }
 
     private fun setupCardSpinner(cardNumbers: List<String>) {
-        // Inicializa el Spinner
         spCard = findViewById(R.id.spCard)
 
-        // Crea un adaptador para el Spinner
         val adapter = ArrayAdapter(
             this,
             android.R.layout.simple_spinner_item,
@@ -142,7 +159,6 @@ class ScheduledPaymentsActivity : AppCompatActivity() {
         )
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
 
-        // Asigna el adaptador al Spinner
         spCard.adapter = adapter
     }
 
@@ -158,14 +174,13 @@ class ScheduledPaymentsActivity : AppCompatActivity() {
             return
         }
 
-        // Verifica que la lista de tarjetas no esté vacía
         if (selectedCardPosition >= cards.size) {
             Toast.makeText(this, "Error al seleccionar la tarjeta", Toast.LENGTH_SHORT).show()
             return
         }
 
         val recipient = users[selectedRecipientPosition]
-        val card = cards[selectedCardPosition] // Accede a la tarjeta desde la lista sincronizada
+        val card = cards[selectedCardPosition]
         val scheduledDateTime = "$date $time"
 
         val payment = ScheduledPayment(
@@ -188,10 +203,10 @@ class ScheduledPaymentsActivity : AppCompatActivity() {
 
         val database = FirebaseDatabase.getInstance().reference
         val paymentsRef = database.child("users").child(currentUser.uid).child("scheduledPayments")
-        val paymentId = paymentsRef.push().key // Genera una clave única para el pago
+        val paymentId = paymentsRef.push().key
 
         if (paymentId != null) {
-            payment.paymentId = paymentId // Asigna el ID único al pago
+            payment.paymentId = paymentId
             paymentsRef.child(paymentId).setValue(payment)
                 .addOnSuccessListener {
                     Toast.makeText(this, "Pago programado guardado", Toast.LENGTH_SHORT).show()
@@ -222,7 +237,6 @@ class ScheduledPaymentsActivity : AppCompatActivity() {
                     }
                 }
 
-                // Configura el RecyclerView con los pagos programados
                 setupScheduledPaymentsRecyclerView(scheduledPayments)
             }
 
@@ -234,11 +248,9 @@ class ScheduledPaymentsActivity : AppCompatActivity() {
 
     private fun setupScheduledPaymentsRecyclerView(payments: MutableList<ScheduledPayment>) {
         if (payments.isEmpty()) {
-            // Muestra un mensaje o vista indicando que no hay pagos programados
             rvScheduledPayments.visibility = View.GONE
             findViewById<View>(R.id.tvNoScheduledPaymentsMessage).visibility = View.VISIBLE
         } else {
-            // Configura el RecyclerView con los pagos programados
             rvScheduledPayments.visibility = View.VISIBLE
             findViewById<View>(R.id.tvNoScheduledPaymentsMessage).visibility = View.GONE
 
@@ -290,25 +302,22 @@ class ScheduledPaymentsActivity : AppCompatActivity() {
                 viewHolder: RecyclerView.ViewHolder,
                 target: RecyclerView.ViewHolder
             ): Boolean {
-                return false // No necesitamos mover elementos
+                return false
             }
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val position = viewHolder.adapterPosition
 
-                // Verifica si la lista tiene elementos
                 if (position < 0 || position >= scheduledPayments.size) {
                     Toast.makeText(this@ScheduledPaymentsActivity, "Error al eliminar el pago", Toast.LENGTH_SHORT).show()
-                    adapter.notifyItemChanged(position) // Restaura el elemento en la interfaz
+                    adapter.notifyItemChanged(position)
                     return
                 }
 
                 val payment = scheduledPayments[position]
 
-                // Elimina el pago de Firebase
                 deletePaymentFromFirebase(payment)
 
-                // Elimina el pago de la lista local
                 adapter.removePayment(position)
 
                 Toast.makeText(this@ScheduledPaymentsActivity, "Pago eliminado", Toast.LENGTH_SHORT).show()
@@ -329,14 +338,12 @@ class ScheduledPaymentsActivity : AppCompatActivity() {
         val database = FirebaseDatabase.getInstance().reference
         val paymentsRef = database.child("users").child(currentUser.uid).child("scheduledPayments")
 
-        // Verifica que el pago tenga un ID único
         val paymentId = payment.paymentId
         if (paymentId.isNullOrEmpty()) {
             Log.e("ScheduledPayments", "El pago no tiene un ID único")
             return
         }
 
-        // Elimina el pago usando su ID único
         paymentsRef.child(paymentId).removeValue()
             .addOnSuccessListener {
                 Log.d("ScheduledPayments", "Pago eliminado de Firebase")
