@@ -99,6 +99,7 @@ class TransferActivity : AppCompatActivity() {
     }
 
     private fun sendTransfer(recipientId: String, amount: Double) {
+        // Creamos la transaccion
         val transactionId = database.child("transactions").push().key
         val currentDate = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault()).format(Date())
 
@@ -107,15 +108,18 @@ class TransferActivity : AppCompatActivity() {
             return
         }
 
+        // Recogemos los datos de la tajeta seleccionada
         database.child("users").child(currentUserUid).child("cards").child(selectedCardId).child("currentBalance")
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(cardSnapshot: DataSnapshot) {
                     val cardBalance = cardSnapshot.getValue(Double::class.java) ?: 0.0
+                    // Comprueba si hay saldo suficiente
                     if (cardBalance < amount) {
                         Toast.makeText(this@TransferActivity, "Saldo insuficiente en la tarjeta seleccionada", Toast.LENGTH_SHORT).show()
                         return
                     }
 
+                    // Descontamos el dinero
                     database.child("users").child(currentUserUid).child("cards").child(selectedCardId).child("currentBalance")
                         .setValue(cardBalance - amount)
 
@@ -126,6 +130,8 @@ class TransferActivity : AppCompatActivity() {
 
                             val senderDescription = "Transferencia a $formattedRecipientName"
 
+
+                            // Guardamos transaccion en el usuario actual
                             val senderTransaction = mapOf(
                                 "amount" to -amount,
                                 "date" to currentDate,
@@ -136,17 +142,20 @@ class TransferActivity : AppCompatActivity() {
                             )
                             database.child("users").child(currentUserUid).child("transactions").child(transactionId).setValue(senderTransaction)
 
+                            // Recogemos el usuario del destinatario
                             database.child("users").child(currentUserUid).child("name").addListenerForSingleValueEvent(object : ValueEventListener {
                                 override fun onDataChange(senderNameSnapshot: DataSnapshot) {
                                     val senderName = senderNameSnapshot.getValue(String::class.java)
                                     val formattedSenderName = senderName?.split(" ")?.firstOrNull() ?: "Usuario"
 
+                                    // Aumentamos su saldo con el valor de la transferencia
                                     database.child("users").child(recipientId).child("balance")
                                         .addListenerForSingleValueEvent(object : ValueEventListener {
                                             override fun onDataChange(recipientSnapshot: DataSnapshot) {
                                                 val recipientBalance = recipientSnapshot.getValue(Double::class.java) ?: 0.0
                                                 database.child("users").child(recipientId).child("balance").setValue(recipientBalance + amount)
 
+                                                // Guardamos los datos de la transaccion en el destinatario
                                                 val recipientTransaction = mapOf(
                                                     "amount" to amount,
                                                     "date" to currentDate,

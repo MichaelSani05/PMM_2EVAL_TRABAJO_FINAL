@@ -2,10 +2,8 @@ package com.example.pmm_2eval_trabajo_final
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
-import android.content.ContentValues
 import android.content.Intent
 import android.os.Bundle
-import android.provider.CalendarContract
 import android.util.Log
 import android.view.View
 import android.widget.*
@@ -15,12 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
-import java.text.ParseException
-import java.text.SimpleDateFormat
 import java.util.*
-import android.Manifest
-import android.content.pm.PackageManager
-import android.provider.CalendarContract.Calendars
 
 class ScheduledPaymentsActivity : AppCompatActivity() {
 

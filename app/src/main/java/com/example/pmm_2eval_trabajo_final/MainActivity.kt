@@ -66,11 +66,13 @@ class MainActivity : AppCompatActivity() {
             finish()
         }
 
+        // Tarjeta
         val btnAddCard = findViewById<ImageView>(R.id.btnAddCard)
         btnAddCard.setOnClickListener {
             startActivity(Intent(this, AddCardActivity::class.java))
         }
 
+        // Transferencia
         btnTransfer = findViewById<ImageView>(R.id.btnTransfer)
         btnTransfer.setOnClickListener {
             if (selectedCardId.isNullOrEmpty()) {
@@ -82,6 +84,7 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
+        // Saldo
         btnAddBalance.setOnClickListener {
             if (selectedCardId.isNullOrEmpty()) {
                 Toast.makeText(this, "No hay tarjeta seleccionada", Toast.LENGTH_SHORT).show()
@@ -92,6 +95,7 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
+        // Menú
         val btnHome = findViewById<Button>(R.id.btnHome)
         btnHome.setOnClickListener {
             Toast.makeText(this, "Ya estás en la página de inicio", Toast.LENGTH_SHORT).show()
@@ -110,6 +114,7 @@ class MainActivity : AppCompatActivity() {
         database = FirebaseDatabase.getInstance("https://pmm-investor-default-rtdb.europe-west1.firebasedatabase.app").reference
         val userCardsRef = database.child("users").child(currentUser.uid).child("cards")
 
+        // Controlar lista/carrousel de tarjetas
         userCardsRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val cards = mutableListOf<Card>()
